@@ -58,19 +58,25 @@ DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
 
-### 4. Run Database Migrations and load dummy data from Seeders
+### 4. Generate Application Key
+
+```bash
+php artisan key:generate
+```
+
+### 5. Run Database Migrations and load dummy data from Seeders
 
 ```bash
 php artisan migrate --seed
 ```
 
-### 5. Install Npm packages and compile assets
+### 6. Install Npm packages and compile assets
 
 ```bash
 npm install && npm run build
 ```
 
-### 6. Serve the application
+### 7. Serve the application
 
 ```bash
 php artisan serve
