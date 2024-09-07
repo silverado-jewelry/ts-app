@@ -40,7 +40,12 @@ class ArticleController extends Controller
             'publish_at' => 'required|date',
         ]);
 
-        $article = $this->articleService->create($request->only(['title', 'body', 'publish_at']));
+        $article = $this->articleService->create(
+            array_merge(
+                ['user_id' => auth('api')->id()],
+                $request->only(['title', 'body', 'publish_at'])
+            )
+        );
 
         return response()->json(
             ArticleResponseDTO::fromModel($article)
@@ -66,9 +71,9 @@ class ArticleController extends Controller
     public function update(Article $article, Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'body' => 'required|string|max:65535',
-            'publish_at' => 'required|date',
+            'title' => 'string|max:255',
+            'body' => 'string|max:65535',
+            'publish_at' => 'date',
         ]);
 
         $article = $this->articleService->update(

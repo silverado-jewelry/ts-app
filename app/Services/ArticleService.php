@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTOs\Article\ArticleResponseDTO;
 use App\Models\Article;
+use App\Models\User;
 use App\Repositories\ArticleRepository;
 use App\Repositories\ModelRepositoryInterface;
 use Illuminate\Http\Request;
@@ -54,17 +55,12 @@ class ArticleService
     }
 
     /**
-     * @param $request
-     * @return mixed
+     * @param array $data
+     * @return Article
      */
-    public function create($request)
+    public function create(array $data): Article
     {
-        return $this->repository->create(
-            array_merge(
-                $request->only(['title', 'body']),
-                ['user_id' => auth()->user()->id]
-            )
-        );
+        return $this->repository->create($data);
     }
 
     /**

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\DTOs\User\UserResponseDTO;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SecurityController extends Controller
@@ -26,6 +26,27 @@ class SecurityController extends Controller
         }
 
         $token = auth()->user()->createToken('authToken')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|confirmed|min:8|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/',
+        ]);
+
+        $user = User::create($request->only(['name', 'email', 'password']));
+
+        $token = $user->createToken('authToken')->plainTextToken;
 
         return response()->json([
             'token' => $token,
