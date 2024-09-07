@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\ArticleRepository;
+use App\Services\ArticleService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(ArticleService::class, function () {
+            return new ArticleService(new ArticleRepository());
+        });
     }
 
     /**

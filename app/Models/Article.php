@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use App\Events\ArticleEventCreating;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Attributes\SearchUsingFullText;
+use Laravel\Scout\Searchable;
 
 /**
  * @property int $id
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Article extends Model
 {
-    use HasFactory, HasTimestamps;
+    use HasFactory, HasTimestamps, Searchable;
 
     /** @var string[] */
     protected $fillable = [
@@ -34,6 +35,26 @@ class Article extends Model
     protected $casts = [
         'publish_at' => 'datetime'
     ];
+
+    /**
+     * @return string
+     */
+    public function searchableAs()
+    {
+        return 'articles_index';
+    }
+
+    /**
+     * @return array
+     */
+    #[SearchUsingFullText(['title', 'body'])]
+    public function toSearchableArray()
+    {
+        return [
+            'title' => $this->title,
+            'body' => $this->body
+        ];
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
