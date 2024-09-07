@@ -84,6 +84,15 @@ php artisan serve
 
 The application will be available at http://localhost:8000.
 
+### 8. Access the Admin Panel
+
+Use following credentials to access the admin panel:
+
+```
+Email: j.snow@localhost.com
+Password: 1234QwertY
+```
+
 ## Unit and Feature Tests
 
 To run the tests, execute the following command:
