@@ -13,11 +13,9 @@ class ArticleSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(int $i = 0): void
+    public function run(): void
     {
-        while ($i < 5) {
-            $i++;
-
+        foreach (range(1, 5) as $i) {
             foreach ($this->getData() as $data) {
                 Article::factory()->create(
                     array_merge($data, ['user_id' => $i])
