@@ -18,6 +18,9 @@ class UserSeeder extends Seeder
         }
     }
 
+    /**
+     * @return array[]
+     */
     private function getData(): array
     {
         return [

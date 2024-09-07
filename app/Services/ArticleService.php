@@ -26,21 +26,29 @@ class ArticleService
     {
         $collection = $this->repository->search($request->input('search'));
 
-        $sort = request()->input('sort', 'publish_at');
+        $sort = request()->input('sort', 'id');
+
+        $sortableColumns = ['id', 'title', 'publish_at'];
 
         if (is_array($sort)) {
-            $sort = array_filter($sort, function($column) {
-                return in_array($column, ['id', 'title', 'publish_at']);
-            }, ARRAY_FILTER_USE_KEY);
-
-            foreach ($sort as $column => $direction) {
-                $collection->orderBy(
-                    $column,
-                    in_array(strtolower($direction), ['asc', 'desc']) ? strtolower($direction) : 'asc'
-                );
+            foreach ($sort as $sortItem) {
+                if (is_string($sortItem)) {
+                    if (in_array($sortItem, $sortableColumns)) {
+                        $collection->orderBy($sortItem);
+                    }
+                } elseif (is_array($sortItem)) {
+                    foreach ($sortItem as $column => $direction) {
+                        if (in_array($column, $sortableColumns)) {
+                            $direction = in_array(strtolower($direction), ['asc', 'desc']) ? strtolower($direction) : 'asc';
+                            $collection->orderBy($column, $direction);
+                        }
+                    }
+                }
             }
         } else {
-            $collection->orderBy($sort);
+            if (is_string($sort) && in_array($sort, $sortableColumns)) {
+                $collection->orderBy($sort);
+            }
         }
 
         $paginatedResults = $collection->paginate($request->input('per_page', 10));
