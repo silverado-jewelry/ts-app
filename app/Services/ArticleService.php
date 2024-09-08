@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Repositories\ArticleRepository;
 use App\Repositories\ModelRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ArticleService
 {
@@ -24,9 +25,17 @@ class ArticleService
      */
     public function search(Request $request)
     {
-        $collection = $this->repository->search($request->input('search'));
+        $validator = Validator::make($request->all(), [
+            'search' => 'nullable|string|max:255|min:3',
+            'sort' => 'nullable|array|string',
+            'per_page' => 'nullable|integer|min:1|max:1000',
+        ]);
 
-        $sort = request()->input('sort', 'id');
+        $params = $validator->valid();
+
+        $collection = $this->repository->search($params['search'] ?? null);
+
+        $sort = $params['sort'] ?? 'id';
 
         $sortableColumns = ['id', 'title', 'publish_at'];
 
@@ -51,7 +60,7 @@ class ArticleService
             }
         }
 
-        $paginatedResults = $collection->paginate($request->input('per_page', 10));
+        $paginatedResults = $collection->paginate($params['per_page'] ?? 10);
 
         $transformedResults = $paginatedResults->getCollection()->map(function($article) {
             return ArticleResponseDTO::fromModel($article);

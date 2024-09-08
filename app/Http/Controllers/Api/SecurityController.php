@@ -22,7 +22,7 @@ class SecurityController extends Controller
         $credentials = $request->only(['email', 'password']);
 
         if (!auth()->attempt($credentials)) {
-            abort(401);
+            abort(401, 'Invalid credentials.');
         }
 
         $token = auth()->user()->createToken('authToken')->plainTextToken;

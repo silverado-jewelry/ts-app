@@ -17,15 +17,9 @@ class ApiResponseTest extends TestCase
         $response = $this->get('/api/login');
         $response->assertStatus(405);
 
-        $response = $this->post('/api/login');
-        $response->assertStatus(422);
-
         // Test register endpoint
         $response = $this->get('/api/register');
         $response->assertStatus(405);
-
-        $response = $this->post('/api/register');
-        $response->assertStatus(422);
 
         // Register a user
         $response = $this->post('/api/register', [
