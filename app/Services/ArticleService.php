@@ -25,9 +25,9 @@ class ArticleService
      */
     public function search(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->json()->all(), [
             'search' => 'nullable|string|max:255|min:3',
-            'sort' => 'nullable|array|string',
+            'sort' => 'nullable',
             'per_page' => 'nullable|integer|min:1|max:1000',
         ]);
 
