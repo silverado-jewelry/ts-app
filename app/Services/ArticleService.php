@@ -25,42 +25,36 @@ class ArticleService
      */
     public function search(Request $request)
     {
-        $validator = Validator::make($request->json()->all(), [
-            'search' => 'nullable|string|max:255|min:3',
+        $validator = Validator::make($request->all(), [
+            'search' => 'nullable|string|max:128|min:3',
             'sort' => 'nullable',
-            'per_page' => 'nullable|integer|min:1|max:1000',
         ]);
 
         $params = $validator->valid();
 
         $collection = $this->repository->search($params['search'] ?? null);
 
-        $sort = $params['sort'] ?? 'id';
+        if (isset($params['sort'])) {
+            $sortParams = is_array($params['sort']) ? $params['sort'] : [$params['sort']];
+            $sortableColumns = ['id', 'title', 'publish_at'];
 
-        $sortableColumns = ['id', 'title', 'publish_at'];
+            foreach ($sortParams as $sortParam) {
+                $sort = explode(':', $sortParam);
 
-        if (is_array($sort)) {
-            foreach ($sort as $sortItem) {
-                if (is_string($sortItem)) {
-                    if (in_array($sortItem, $sortableColumns)) {
-                        $collection->orderBy($sortItem);
-                    }
-                } elseif (is_array($sortItem)) {
-                    foreach ($sortItem as $column => $direction) {
-                        if (in_array($column, $sortableColumns)) {
-                            $direction = in_array(strtolower($direction), ['asc', 'desc']) ? strtolower($direction) : 'asc';
-                            $collection->orderBy($column, $direction);
-                        }
-                    }
+                if (!in_array($sort[0], $sortableColumns)) {
+                    continue;
                 }
-            }
-        } else {
-            if (is_string($sort) && in_array($sort, $sortableColumns)) {
-                $collection->orderBy($sort);
+
+                $collection->orderBy(
+                    $sort[0],
+                    isset($sort[1]) && $sort[1] === 'desc' ? 'desc' : 'asc'
+                );
             }
         }
 
-        $paginatedResults = $collection->paginate($params['per_page'] ?? 10);
+        $paginatedResults = $collection
+            ->paginate($params['per_page'] ?? 10)
+            ->withQueryString();
 
         $transformedResults = $paginatedResults->getCollection()->map(function($article) {
             return ArticleResponseDTO::fromModel($article);
