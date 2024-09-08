@@ -16,7 +16,7 @@ class ApiAuth
     public function handle(Request $request, Closure $next): Response
     {
         if (!auth('api')->check()) {
-            abort(403, __('auth.errors.authentication_required'));
+            abort(403, "Authentication required. Please log in.");
         }
 
         return $next($request);

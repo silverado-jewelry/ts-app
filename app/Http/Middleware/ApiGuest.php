@@ -17,7 +17,7 @@ class ApiGuest
     public function handle(Request $request, Closure $next): Response
     {
         if (auth('api')->check()) {
-            abort(406, __('auth.errors.already_authenticated'));
+            abort(406, 'You are already authenticated. Log out to access this route.');
         }
 
         return $next($request);
