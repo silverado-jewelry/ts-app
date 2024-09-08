@@ -16,11 +16,11 @@ class EnsureAuthor
     public function handle(Request $request, Closure $next): Response
     {
         if (($article = $request->route('article')) === null) {
-            abort(404);
+            abort(404, 'Article not found.');
         }
 
         if ($article->user_id !== auth('api')->id()) {
-            abort(403, __('auth.errors.unauthorized'));
+            abort(403, "You're not the author of this article.");
         }
 
         return $next($request);
